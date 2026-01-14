@@ -1,14 +1,17 @@
-// services/geminiService.ts
-import { UserPreferences, WalkingRoute } from '../types';
+import { UserPreferences, WalkingRoute } from "../types";
 
-export async function generateRoute(prefs: UserPreferences): Promise<WalkingRoute> {
-  const res = await fetch('/api/generate-route', {
+export const generateRoute = async (prefs: UserPreferences): Promise<WalkingRoute> => {
+  const res = await fetch('/api/generateRoute', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(prefs),
   });
 
-  if (!res.ok) throw new Error('AI error');
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || 'Fehler beim Generieren der Route');
+  }
 
-  return res.json();
-}
+  const data = await res.json();
+  return data;
+};
