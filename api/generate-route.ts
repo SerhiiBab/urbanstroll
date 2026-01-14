@@ -1,14 +1,10 @@
 import { GoogleGenAI } from "@google/genai";
-import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY!,
+  apiKey: process.env.API_KEY!, // ← ВАЖНО
 });
 
-export default async function handler(
-  req: VercelRequest,
-  res: VercelResponse
-) {
+export default async function handler(req: any, res: any) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
@@ -23,24 +19,29 @@ Dauer: etwa ${prefs.duration} Minuten.
 Startpunkt: ${prefs.startingPoint || "Stadtzentrum"}.
 
 Die Route sollte logisch, sicher und interessant sein.
-Antwort NUR im JSON-Format auf DEUTSCH.
-
-JSON-Struktur:
-{
-  "name": "",
-  "summary": "",
-  "distance": "",
-  "duration": "",
-  "steps": [
-    {
-      "title": "",
-      "description": "",
-      "estimatedTime": "",
-      "category": ""
-    }
-  ]
-}
+Antwort NUR im JSON-Format.
 `;
+
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
+    });
+
+    const text = response.text || "";
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+
+    if (!jsonMatch) {
+      return res.status(500).json({ error: "Invalid AI response" });
+    }
+
+    res.status(200).json(JSON.parse(jsonMatch[0]));
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "AI error" });
+  }
+}
+
+
 
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
