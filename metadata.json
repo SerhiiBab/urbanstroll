@@ -1,0 +1,8 @@
+
+{
+  "name": "UrbanStroll AI",
+  "description": "KI-gestützter Generator für einzigartige Spaziergänge, der dir hilft, Städte basierend auf deinen persönlichen Interessen, der Dauer und lokalen Sehenswürdigkeiten mit Google Maps-Unterstützung zu entdecken.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
